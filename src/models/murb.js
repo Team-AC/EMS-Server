@@ -5,8 +5,8 @@ const murbSchema = new mongoose.Schema({
   Power: Number
 });
 
-const murb = mongoose.model('MURB-Power', murbSchema);
+const murbPower = mongoose.model('MURB-Power', murbSchema);
 
 module.exports = {
-  murb,
+  murbPower,
 }

@@ -1,10 +1,10 @@
 const express = require('express');
 const murbAPI = express.Router();
-const { murb } = require('../models');
+const { murbPower } = require('../models/murb');
 
 
 murbAPI.get('/', (req, res) => {
-  murb.find((err, murbs) => {
+  murbPower.find((err, murbs) => {
     if (err) return console.error(err);
     res.send(murbs);
   });
