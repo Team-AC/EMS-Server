@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const murbSchema = new mongoose.Schema({
-  TimeStamp: String,
+  TimeStamp: Date,
   Power: Number
 });
 
