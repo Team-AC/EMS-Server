@@ -21,6 +21,26 @@ murbAPI.get('/', (req, res) => {
     }
     
   });
-})
+});
+
+murbAPI.post('/oldData', (req, res) => {
+  murbPower.create(req.body, (err) => {
+    if (err) {
+      res.sendStatus(400);
+      console.log(err);
+    }
+    res.sendStatus(200);
+  });
+});
+
+murbAPI.post('/newData', (req, res) => {
+  murbPower.create(req.body, (err) => {
+    if (err) {
+      res.sendStatus(400);
+      console.log(err);
+    }
+    res.sendStatus(200);
+  });
+});
 
 module.exports = murbAPI;
