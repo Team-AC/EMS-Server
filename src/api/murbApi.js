@@ -1,4 +1,4 @@
-const { subHours, formatISO, isSameHour, startOfHour } = require('date-fns');
+const { subHours, formatISO, isSameHour, startOfHour, parseISO, getHours } = require('date-fns');
 const express = require('express');
 const _ = require('lodash');
 const murb = require('../models/murb');
@@ -24,6 +24,10 @@ murbAPI.get('/', (req, res) => {
     }
   });
 });
+
+function avgPowerFromData(data) {
+  return data.map(data => data.Power).reduce((sum, n) => sum + n)
+}
 
 murbAPI.get('/pastDay', (req, res) => {
   murbPower.find({
@@ -55,10 +59,34 @@ murbAPI.get('/pastDay', (req, res) => {
       }
     }
 
+    let peakArray = aggregatedData.slice(0,4);
+    for (let i=0; i < aggregatedData.length - 4; i++) {
+      const checkArray = aggregatedData.slice(i, i + 4)
+      if (avgPowerFromData(peakArray) <= avgPowerFromData(checkArray)) {
+        peakArray = checkArray;
+      } 
+    }
+
+    const peakHours = `${getHours(peakArray[0].TimeStamp)} - ${getHours(_.last(peakArray).TimeStamp)}`
+
+    let offPeakArray = aggregatedData.slice(0,4);
+    for (let i=0; i < aggregatedData.length - 4; i++) {
+      const checkArray = aggregatedData.slice(i, i + 4)
+      if (avgPowerFromData(offPeakArray) >= avgPowerFromData(checkArray)) {
+        offPeakArray = checkArray;
+      } 
+    }
+
+    const offPeakHours = `${getHours(offPeakArray[0].TimeStamp)} - ${getHours(_.last(offPeakArray).TimeStamp)}`
+
     if (err || !aggregatedData) {
       res.sendStatus(500);
     } else {
-      res.send(aggregatedData);
+      res.send({
+        peakHours,
+        offPeakHours,
+        aggregatedData
+      });
     }
   });
 });
