@@ -1,4 +1,7 @@
+const { subHours, formatISO, isSameHour, startOfHour } = require('date-fns');
 const express = require('express');
+const _ = require('lodash');
+const murb = require('../models/murb');
 const murbAPI = express.Router();
 const { murbPower } = require('../models/murb');
 
@@ -19,7 +22,44 @@ murbAPI.get('/', (req, res) => {
     } else {
       res.send(murbs);
     }
-    
+  });
+});
+
+murbAPI.get('/pastDay', (req, res) => {
+  murbPower.find({
+    TimeStamp: {
+      $gte: formatISO(subHours(new Date(), 24)),
+      $lte: formatISO(new Date())
+    }
+  }, (err, murbs) => {
+
+    const murbsAggregatedHours = murbs.map((murb) => ({
+      Power: murb.Power,
+      TimeStamp: startOfHour(murb.TimeStamp)
+    }));
+
+    let aggregatedData = [];
+    let aggregatingHour = murbsAggregatedHours[0];
+    let aggregatingPower = [];
+
+    for (const murb of murbsAggregatedHours) {
+      if (isSameHour(murb.TimeStamp, aggregatingHour.TimeStamp)) {
+        aggregatingPower.push(murb.Power);
+      } else {
+        aggregatedData.push({
+          Power: aggregatingPower.reduce((sum, n) => sum + n)/aggregatingPower.length,
+          TimeStamp: aggregatingHour.TimeStamp
+        });
+        aggregatingHour = murb;
+        aggregatingPower = [];
+      }
+    }
+
+    if (err || !aggregatedData) {
+      res.sendStatus(500);
+    } else {
+      res.send(aggregatedData);
+    }
   });
 });
 
