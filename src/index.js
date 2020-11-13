@@ -26,9 +26,12 @@ app.use('/api', api);
 // Socket.io
 const server = require('http').createServer(app);
 const options = { };
-const io = require('socket.io')(server, options);
-io.on('connect', socket => { 
-  console.log("Connected!")
+const io = require('socket.io')(server);
+io.on('connection', socket => {
+  socket.on('message', () => {
+    console.log('Test');
+  })
+  console.log("Connected!")   
 });
 
  // Listening
