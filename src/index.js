@@ -12,17 +12,6 @@ app.use(express.json({limit: "5mb"}));
 // MongoDB
 require('./config/mongo');
 
-// Socket.io
-const server = require('http').createServer(app);
-const options = { };
-const io = require('socket.io')(server, options);
-io.on('connection', socket => { 
-  socket.on('message', data => {
-    console.log(data);
-  });
- });
-
-
 // Cors
 const cors = require('cors');
 app.use(cors());
@@ -33,7 +22,17 @@ const api = require('./api/api');
 app.use('/api', api);
 
 // --- Server --- //
-app.listen(port, () => {
+
+// Socket.io
+const server = require('http').createServer(app);
+const options = { };
+const io = require('socket.io')(server, options);
+io.on('connect', socket => { 
+  console.log("Connected!")
+});
+
+ // Listening
+server.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 })
 
