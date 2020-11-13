@@ -25,11 +25,10 @@ app.use('/api', api);
 
 // Socket.io
 const server = require('http').createServer(app);
-const options = { };
 const io = require('socket.io')(server);
 io.on('connection', socket => {
-  socket.on('message', () => {
-    console.log('Test');
+  socket.on('message', (data) => {
+    console.log(data);
   })
   console.log("Connected!")   
 });
