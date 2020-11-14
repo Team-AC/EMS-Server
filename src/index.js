@@ -27,10 +27,8 @@ app.use('/api', api);
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 io.on('connection', socket => {
-  socket.on('message', (data) => {
-    console.log(data);
-  })
-  console.log("Connected!")   
+  console.log("Connected to Python Socket.io Client!");
+  require('./sockets/sockets')(socket);
 });
 
  // Listening
