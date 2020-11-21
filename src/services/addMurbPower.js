@@ -35,12 +35,11 @@ module.exports = (data) => {
   const dateWeekly = startOfWeek(date);
   const dateMonthly = startOfMonth(date);
 
-  return murbPower.create(data)
-  .then(() => addAggregatedData(murbPowerHourly, {...data, TimeStamp: dateHourly}))
-  .then(() => addAggregatedData(murbPowerDaily, {...data, TimeStamp: dateDaily}))
-  .then(() => addAggregatedData(murbPowerWeekly, {...data, TimeStamp: dateWeekly}))
-  .then(() => addAggregatedData(murbPowerMonthly, {...data, TimeStamp: dateMonthly}))
-  .catch((err) => {
-    console.log(err);
-  });
+  return Promise.all([
+    murbPower.create(data),
+    addAggregatedData(murbPowerHourly, {...data, TimeStamp: dateHourly}),
+    addAggregatedData(murbPowerDaily, {...data, TimeStamp: dateDaily}),
+    addAggregatedData(murbPowerWeekly, {...data, TimeStamp: dateWeekly}),
+    addAggregatedData(murbPowerMonthly, {...data, TimeStamp: dateMonthly}),
+  ]);
 }
