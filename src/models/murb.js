@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const murbSchema = new mongoose.Schema({
+// Define Schemas
+const murbPowerSchema = new mongoose.Schema({
   TimeStamp: {
     type: Date,
     unique: true
@@ -8,8 +9,26 @@ const murbSchema = new mongoose.Schema({
   Power: Number
 });
 
-const murbPower = mongoose.model('MURB-Power', murbSchema);
+const murbAggregatedPowerSchema = new mongoose.Schema({
+  TimeStamp: {
+    type: Date,
+    unique: true
+  },
+  Power: Number,
+  AggregatedAmount: Number,
+});
+
+// Define Models
+const murbPower = mongoose.model('MURB-Power', murbPowerSchema);
+const murbPowerHourly = mongoose.model('MURB-Power-Hourly', murbAggregatedPowerSchema);
+const murbPowerDaily = mongoose.model('MURB-Power-Daily', murbAggregatedPowerSchema);
+const murbPowerWeekly = mongoose.model('MURB-Power-Weekly', murbAggregatedPowerSchema);
+const murbPowerMonthly = mongoose.model('MURB-Power-Monthly', murbAggregatedPowerSchema);
 
 module.exports = {
   murbPower,
+  murbPowerHourly,
+  murbPowerDaily,
+  murbPowerWeekly,
+  murbPowerMonthly
 }
