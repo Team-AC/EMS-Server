@@ -1,15 +1,12 @@
-const { murbPower } = require('../models/murb');
+const addMurbPower = require('../services/addMurbPower');
 
 module.exports = (socket) => {
   socket.on("Old Murb Power", (data) => {
-    murbPower.create(data, (err) => {
-      if (err) console.error(err);
-    });
+    addMurbPower(data)
+    .then(() => socket.emit('Old Murb Power Next'));
   });
 
   socket.on("New Murb Power", (data) => {
-    murbPower.create(data, (err) => {
-      if (err) console.error(err);
-    });
+    addMurbPower(data);
   });
 }
