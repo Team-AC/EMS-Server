@@ -1,21 +1,31 @@
-const { subHours, formatISO, isSameHour, startOfHour, parseISO, getHours } = require('date-fns');
+const { subHours, formatISO, isSameHour, startOfHour, parseISO, getHours, subMonths, subDays } = require('date-fns');
 const express = require('express');
 const _ = require('lodash');
 const getSocket = require('../helpers/getSocket');
 const murbAPI = express.Router();
 const { murbPower } = require('../models/murb');
+const preAddMurbPower = require('../services/preAddMurbPower');
 
 module.exports = (io) => {
-  murbAPI.post('/', (req, res) => {
+  murbAPI.post('/pastDay', (req, res) => {
     const socket = getSocket(io);
-    socket.emit("generate murb power", (data) => {
-      
+
+    socket.emit("Pre - Generate Murb Power - Past Day", () => {
+      const interval = {
+        start: subDays(new Date(), 1),
+        end: new Date()
+      }
+
+      preAddMurbPower(interval)
+      .then(() => {
+        socket.emit("Generate Murb Power - Past Day");
+        res.send(200);
+      });
     });
-    res.send(200);
+
   });
 
   murbAPI.delete('/', (req, res) => {
-    io.emit("test", "world");
     res.send(200);
   });
 
