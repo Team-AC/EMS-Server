@@ -1,7 +1,9 @@
 const express = require('express');
 const apiRouter = express.Router();
 
-const murbAPI = require('./murbApi');
-apiRouter.use('/murb', murbAPI);
+module.exports = (io) => {
+  const murbAPI = require('./murbApi')(io);
+  apiRouter.use('/murb', murbAPI);
 
-module.exports = apiRouter;
+  return apiRouter
+}

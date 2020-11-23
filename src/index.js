@@ -16,20 +16,20 @@ require('./config/mongo');
 const cors = require('cors');
 app.use(cors());
 
-// --- Routes ---//
-const api = require('./api/api');
-
-app.use('/api', api);
-
 // --- Server --- //
 
 // Socket.io
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 io.on('connection', socket => {
-  console.log("Connected to Python Socket.io Client!");
+  console.log("A Client has connected!");
   require('./sockets/sockets')(socket);
 });
+
+// Router
+const api = require('./api/api')(io);
+
+app.use('/api', api);
 
  // Listening
 server.listen(port, () => {
