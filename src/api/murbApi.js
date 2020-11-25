@@ -6,27 +6,45 @@ const murbAPI = express.Router();
 const { murbPower } = require('../models/murb');
 const preAddMurbPower = require('../services/preAddMurbPower');
 
+function validateInterval(req, res, next) {
+  const { interval } = req.params;
+  const possibleValues = [
+    "pastDay",
+    "pastWeek",
+    "pastMonth",
+    "pastYear"
+  ];
+
+  if (possibleValues.includes(interval)) {
+    next();
+  } else {
+    res.status(400).send(`The interval parameter ${interval} is not valid`);
+  }
+}
+
 module.exports = (io) => {
-  murbAPI.post('/pastDay', (req, res) => {
+  murbAPI.post('/generate/:interval:', validateInterval, (req, res) => {
+    const { interval } = req.params;
+    
     const socket = getSocket(io);
 
-    socket.emit("Pre - Generate Murb Power - Past Day", () => {
-      const interval = {
+    socket.emit("Pre - Generate Murb Power", () => {
+      const dateInterval = {
         start: subDays(new Date(), 1),
         end: new Date()
       }
 
-      preAddMurbPower(interval)
+      preAddMurbPower(dateInterval)
       .then(() => {
-        socket.emit("Generate Murb Power - Past Day");
-        res.send(200);
+        socket.emit("Generate Murb Power", interval);
+        res.sendStatus(200);
       });
     });
 
   });
 
   murbAPI.delete('/', (req, res) => {
-    res.send(200);
+    res.sendStatus(200);
   });
 
   murbAPI.get('/', (req, res) => {
