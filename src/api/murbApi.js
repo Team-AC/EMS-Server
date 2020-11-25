@@ -23,7 +23,7 @@ function validateInterval(req, res, next) {
 }
 
 module.exports = (io) => {
-  murbAPI.post('/generate/:interval:', validateInterval, (req, res) => {
+  murbAPI.post('/generate/:interval', validateInterval, (req, res) => {
     const { interval } = req.params;
     
     const socket = getSocket(io);
