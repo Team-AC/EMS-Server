@@ -28,9 +28,16 @@ module.exports = (io) => {
     
     const socket = getSocket(io);
 
+    const amountOfDaysToSub = {
+      "pastDay": 1,
+      "pastWeek": 7,
+      "pastMonth": 30,
+      "pastYear": 365
+    }
+
     socket.emit("Pre - Generate Murb Power", () => {
       const dateInterval = {
-        start: subDays(new Date(), 1),
+        start: subDays(new Date(), amountOfDaysToSub[interval]),
         end: new Date()
       }
 
