@@ -3,7 +3,7 @@ const express = require('express');
 const _ = require('lodash');
 const getSocket = require('../helpers/getSocket');
 const murbAPI = express.Router();
-const { murbPower } = require('../models/murb');
+const { murbPower, murbPowerDaily, murbPowerHourly, murbPowerWeekly, murbPowerMonthly } = require('../models/murb');
 const preAddMurbPower = require('../services/preAddMurbPower');
 
 function validateInterval(req, res, next) {
@@ -76,68 +76,104 @@ module.exports = (io) => {
   function avgPowerFromData(data) {
     return data.map(data => data.Power).reduce((sum, n) => sum + n)
   }
+  
+  murbAPI.get('/:interval', validateInterval, (req, res) => {
+    const { interval } = req.params;
+    
+    const amountOfDaysToSub = {
+      "pastDay": 1,
+      "pastWeek": 7,
+      "pastMonth": 30,
+      "pastYear": 365
+    }
 
-  murbAPI.get('/pastDay', (req, res) => {
-    murbPower.find({
+    const model = {
+      "pastDay": murbPowerHourly,
+      "pastWeek": murbPowerDaily,
+      "pastMonth": murbPowerWeekly,
+      "pastYear": murbPowerMonthly
+    }
+
+    model[interval].find({
       TimeStamp: {
-        $gte: formatISO(subHours(new Date(), 24)),
+        $gte: formatISO(subHours(new Date(), amountOfDaysToSub[interval])),
         $lte: formatISO(new Date())
       }
-    }, (err, murbs) => {
-
-      const murbsAggregatedHours = murbs.map((murb) => ({
-        Power: murb.Power,
-        TimeStamp: startOfHour(murb.TimeStamp)
-      }));
-
-      let aggregatedData = [];
-      let aggregatingHour = murbsAggregatedHours[0];
-      let aggregatingPower = [];
-
-      for (const murb of murbsAggregatedHours) {
-        if (isSameHour(murb.TimeStamp, aggregatingHour.TimeStamp)) {
-          aggregatingPower.push(murb.Power);
-        } else {
-          aggregatedData.push({
-            Power: aggregatingPower.reduce((sum, n) => sum + n)/aggregatingPower.length,
-            TimeStamp: aggregatingHour.TimeStamp
-          });
-          aggregatingHour = murb;
-          aggregatingPower = [];
-        }
-      }
-
-      let peakArray = aggregatedData.slice(0,4);
-      for (let i=0; i < aggregatedData.length - 4; i++) {
-        const checkArray = aggregatedData.slice(i, i + 4)
-        if (avgPowerFromData(peakArray) <= avgPowerFromData(checkArray)) {
-          peakArray = checkArray;
-        } 
-      }
-
-      const peakHours = `${getHours(peakArray[0].TimeStamp)} - ${getHours(_.last(peakArray).TimeStamp)}`
-
-      let offPeakArray = aggregatedData.slice(0,4);
-      for (let i=0; i < aggregatedData.length - 4; i++) {
-        const checkArray = aggregatedData.slice(i, i + 4)
-        if (avgPowerFromData(offPeakArray) >= avgPowerFromData(checkArray)) {
-          offPeakArray = checkArray;
-        } 
-      }
-
-      const offPeakHours = `${getHours(offPeakArray[0].TimeStamp)} - ${getHours(_.last(offPeakArray).TimeStamp)}`
+    }, (err, aggregatedData) => {
 
       if (err || !aggregatedData) {
         res.sendStatus(500);
       } else {
         res.send({
-          peakHours,
-          offPeakHours,
+          peakHours: null,
+          offPeakHours: null,
           aggregatedData
         });
       }
     });
   });
+
+  // murbAPI.get('/pastDay', (req, res) => {
+  //   murbPower.find({
+  //     TimeStamp: {
+  //       $gte: formatISO(subHours(new Date(), 24)),
+  //       $lte: formatISO(new Date())
+  //     }
+  //   }, (err, murbs) => {
+
+  //     const murbsAggregatedHours = murbs.map((murb) => ({
+  //       Power: murb.Power,
+  //       TimeStamp: startOfHour(murb.TimeStamp)
+  //     }));
+
+  //     let aggregatedData = [];
+  //     let aggregatingHour = murbsAggregatedHours[0];
+  //     let aggregatingPower = [];
+
+  //     for (const murb of murbsAggregatedHours) {
+  //       if (isSameHour(murb.TimeStamp, aggregatingHour.TimeStamp)) {
+  //         aggregatingPower.push(murb.Power);
+  //       } else {
+  //         aggregatedData.push({
+  //           Power: aggregatingPower.reduce((sum, n) => sum + n)/aggregatingPower.length,
+  //           TimeStamp: aggregatingHour.TimeStamp
+  //         });
+  //         aggregatingHour = murb;
+  //         aggregatingPower = [];
+  //       }
+  //     }
+
+  //     let peakArray = aggregatedData.slice(0,4);
+  //     for (let i=0; i < aggregatedData.length - 4; i++) {
+  //       const checkArray = aggregatedData.slice(i, i + 4)
+  //       if (avgPowerFromData(peakArray) <= avgPowerFromData(checkArray)) {
+  //         peakArray = checkArray;
+  //       } 
+  //     }
+
+  //     const peakHours = `${getHours(peakArray[0].TimeStamp)} - ${getHours(_.last(peakArray).TimeStamp)}`
+
+  //     let offPeakArray = aggregatedData.slice(0,4);
+  //     for (let i=0; i < aggregatedData.length - 4; i++) {
+  //       const checkArray = aggregatedData.slice(i, i + 4)
+  //       if (avgPowerFromData(offPeakArray) >= avgPowerFromData(checkArray)) {
+  //         offPeakArray = checkArray;
+  //       } 
+  //     }
+
+  //     const offPeakHours = `${getHours(offPeakArray[0].TimeStamp)} - ${getHours(_.last(offPeakArray).TimeStamp)}`
+
+  //     if (err || !aggregatedData) {
+  //       res.sendStatus(500);
+  //     } else {
+  //       res.send({
+  //         peakHours,
+  //         offPeakHours,
+  //         aggregatedData
+  //       });
+  //     }
+  //   });
+  // });
 
   return murbAPI;
 }
