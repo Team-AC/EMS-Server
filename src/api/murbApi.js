@@ -51,7 +51,11 @@ module.exports = (io) => {
   });
 
   murbAPI.delete('/', (req, res) => {
-    res.sendStatus(200);
+    const socket = getSocket(io);
+
+    socket.emit("Stop Murb Power", (response) => {
+      res.sendStatus(200);
+    });
   });
 
   murbAPI.get('/', (req, res) => {
