@@ -100,17 +100,27 @@ module.exports = (io) => {
 
     model[interval].find({
       TimeStamp: {
-        $gte: formatISO(subHours(new Date(), amountOfDaysToSub[interval])),
-        $lte: formatISO(new Date())
+        $gte: subDays(new Date(), amountOfDaysToSub[interval]),
+        $lte: new Date()
       }
-    }, (err, aggregatedData) => {
+    }, (err, data) => {
+      aggregatedData = [];
 
-      if (err || !aggregatedData) {
+      data.forEach(({TimeStamp, Power, AggregatedAmount}) => {
+        if (Power) {
+          aggregatedData.push({
+            TimeStamp,
+            Power: Power/AggregatedAmount,
+          })
+        }
+      });
+
+      if (err) {
         res.sendStatus(500);
       } else {
         res.send({
-          peakHours: null,
-          offPeakHours: null,
+          peakUsage: null,
+          offPeakUsage: null,
           aggregatedData
         });
       }
