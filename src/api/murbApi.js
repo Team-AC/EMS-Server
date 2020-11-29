@@ -2,6 +2,7 @@ const { subHours, formatISO, isSameHour, startOfHour, parseISO, getHours, subMon
 const express = require('express');
 const _ = require('lodash');
 const { Model } = require('mongoose');
+const getCostFromPower = require('../helpers/getCostFromPower');
 const getSocket = require('../helpers/getSocket');
 const murbAPI = express.Router();
 const { murbPower, murbPowerDaily, murbPowerHourly, murbPowerWeekly, murbPowerMonthly } = require('../models/murb');
@@ -130,6 +131,7 @@ module.exports = (io) => {
           aggregatedData.push({
             TimeStamp,
             Power: Power/AggregatedAmount,
+            Cost: getCostFromPower(Power, TimeStamp)
           })
         }
       });

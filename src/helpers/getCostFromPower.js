@@ -6,6 +6,7 @@ module.exports = (power, timestamp) => {
   const date = getDate(timestamp);
   const day = getDay(timestamp);
   
+  power = power/4;
   switch(month) {
     case 10://nov
     case 11://dec
