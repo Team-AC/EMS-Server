@@ -1,6 +1,7 @@
 const { subHours, formatISO, isSameHour, startOfHour, parseISO, getHours, subMonths, subDays } = require('date-fns');
 const express = require('express');
 const _ = require('lodash');
+const { Model } = require('mongoose');
 const getSocket = require('../helpers/getSocket');
 const murbAPI = express.Router();
 const { murbPower, murbPowerDaily, murbPowerHourly, murbPowerWeekly, murbPowerMonthly } = require('../models/murb');
@@ -36,18 +37,29 @@ module.exports = (io) => {
       "pastYear": 365
     }
 
-    socket.emit("Pre - Generate Murb Power", () => {
-      const dateInterval = {
-        start: subDays(new Date(), amountOfDaysToSub[interval]),
-        end: new Date()
+    murbPower.estimatedDocumentCount()
+    .then((count) => {
+      if ((count == 0)) {
+        socket.emit("Pre - Generate Murb Power", () => {
+          const dateInterval = {
+            start: subDays(new Date(), amountOfDaysToSub[interval]),
+            end: new Date()
+          }
+
+          preAddMurbPower(dateInterval)
+          .then(() => {
+            socket.emit("Generate Murb Power", interval);
+            res.sendStatus(200);
+          })
+          .catch((err) => {
+            res.status(400).send(err)
+          })
+        });
+      } else {
+        res.status(400).send("Cannot generate data while there is still data in the database, send the delete request first")
       }
 
-      preAddMurbPower(dateInterval)
-      .then(() => {
-        socket.emit("Generate Murb Power", interval);
-        res.sendStatus(200);
-      });
-    });
+    })
 
   });
 
