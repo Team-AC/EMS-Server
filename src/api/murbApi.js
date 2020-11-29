@@ -5,6 +5,7 @@ const getSocket = require('../helpers/getSocket');
 const murbAPI = express.Router();
 const { murbPower, murbPowerDaily, murbPowerHourly, murbPowerWeekly, murbPowerMonthly } = require('../models/murb');
 const preAddMurbPower = require('../services/preAddMurbPower');
+const removeAllMurbPower = require('../services/removeAllMurbPower');
 
 function validateInterval(req, res, next) {
   const { interval } = req.params;
@@ -54,7 +55,13 @@ module.exports = (io) => {
     const socket = getSocket(io);
 
     socket.emit("Stop Murb Power", (response) => {
-      res.sendStatus(200);
+      removeAllMurbPower()
+      .then(() => {
+        res.sendStatus(200);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      })
     });
   });
 

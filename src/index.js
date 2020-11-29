@@ -33,7 +33,7 @@ app.use('/api', api);
 
  // Listening
 server.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`EMS-Server listening at http://localhost:${port}`);
 })
 
 
