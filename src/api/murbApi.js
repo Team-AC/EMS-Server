@@ -125,7 +125,7 @@ module.exports = (io) => {
     const model = {
       "pastDay": murbPowerHourly,
       "pastWeek": murbPowerDaily,
-      "pastMonth": murbPowerWeekly,
+      "pastMonth": murbPowerDaily,
       "pastYear": murbPowerMonthly
     }
 
