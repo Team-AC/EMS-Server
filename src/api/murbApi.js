@@ -78,23 +78,34 @@ module.exports = (io) => {
     });
   });
 
-  murbAPI.get('/', (req, res) => {
-    const {startDate, endDate} = req.query;
+  // murbAPI.get('/', (req, res) => {
+  //   const {startDate, endDate} = req.query;
 
-    murbPower.find({
-      TimeStamp: {
-        $gte: startDate,
-        $lte: endDate
-      }
-    }, (err, murbs) => {
-      if (err) return console.error(err);
+  //   murbPower.find({
+  //     TimeStamp: {
+  //       $gte: startDate,
+  //       $lte: endDate
+  //     }
+  //   }, (err, murbs) => {
+  //     if (err) return console.error(err);
 
-      if (murbs.length > 100) {
-        res.status(404).send({error: "Requested more than a 100 points"});
-      } else {
-        res.send(murbs);
-      }
-    });
+  //     if (murbs.length > 100) {
+  //       res.status(404).send({error: "Requested more than a 100 points"});
+  //     } else {
+  //       res.send(murbs);
+  //     }
+  //   });
+  // });
+
+  murbAPI.get('/count', (req, res) => {
+    murbPower.estimatedDocumentCount()
+    .then((count) => {
+      res.send({count})
+    })
+    .catch((err) => {
+      console.log(err);
+      res.sendStatus(500);
+    })
   });
 
   function avgPowerFromData(data) {
