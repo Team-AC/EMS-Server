@@ -109,7 +109,7 @@ module.exports = (io) => {
   });
 
   murbAPI.get('/status', (req, res) => {
-    const socket = getSocket();
+    const socket = getSocket(io);
 
     socket.emit("Status Check", (data) => {
       res.send(data);
