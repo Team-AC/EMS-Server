@@ -20,7 +20,8 @@ app.use(cors());
 // --- Server --- //
 
 // Socket.io
-const io = require('socket.io')({});
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 io.on('connection', socket => {
   console.log("A Client has connected!");
   require('./sockets/sockets')(socket);
@@ -31,12 +32,7 @@ const api = require('./api/api')(io);
 
 app.use('/api', api);
 
- // Listening to HTTP
-app.listen(portServer, () => {
-  console.log(`EMS-Server listening at http://localhost:${portServer}`);
+ // Listening
+server.listen(port, () => {
+  console.log(`EMS-Server listening at http://localhost:${port}`);
 })
-
- // Listening to Socket.io
-io.listen(portSocket);
-
-
