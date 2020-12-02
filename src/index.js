@@ -6,7 +6,8 @@ require('dotenv').config();
 // Express
 const express = require('express');
 const app = express();
-const port = 3000;
+const portServer = 3000;
+const portSocket = 3002;
 app.use(express.json({limit: "5mb"}));
 
 // MongoDB
@@ -19,8 +20,7 @@ app.use(cors());
 // --- Server --- //
 
 // Socket.io
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')({});
 io.on('connection', socket => {
   console.log("A Client has connected!");
   require('./sockets/sockets')(socket);
@@ -31,9 +31,12 @@ const api = require('./api/api')(io);
 
 app.use('/api', api);
 
- // Listening
-server.listen(port, () => {
-  console.log(`EMS-Server listening at http://localhost:${port}`);
+ // Listening to HTTP
+app.listen(portServer, () => {
+  console.log(`EMS-Server listening at http://localhost:${portServer}`);
 })
+
+ // Listening to Socket.io
+io.listen(portSocket);
 
 
