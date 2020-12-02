@@ -6,8 +6,7 @@ require('dotenv').config();
 // Express
 const express = require('express');
 const app = express();
-const portServer = 3000;
-const portSocket = 3002;
+const port = 3000;
 app.use(express.json({limit: "5mb"}));
 
 // MongoDB
