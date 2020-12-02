@@ -108,6 +108,14 @@ module.exports = (io) => {
     })
   });
 
+  murbAPI.get('/status', (req, res) => {
+    const socket = getSocket();
+
+    socket.emit("Status Check", (data) => {
+      res.send(data);
+    });
+  });
+
   function avgPowerFromData(data) {
     return data.map(data => data.Power).reduce((sum, n) => sum + n)
   }
