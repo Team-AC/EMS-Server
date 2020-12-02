@@ -112,7 +112,7 @@ module.exports = (io) => {
     const socket = getSocket(io);
 
     socket.emit("Status Check", (data) => {
-      res.send(data);
+      res.status(200).send(data);
     });
   });
 
