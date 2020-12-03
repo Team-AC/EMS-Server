@@ -5,6 +5,8 @@ function avgPowerFromData(data) {
 module.exports = (aggregatedData) => {
 
   const amountOfPoints = Math.floor(aggregatedData.length * 0.25) // Getting bottom 25% of points
+  if (amountOfPoints <= 1) return null;
+  
   let offPeakArray = aggregatedData.slice(0, amountOfPoints);
 
   for (let i=0; i < aggregatedData.length - amountOfPoints; i++) {
