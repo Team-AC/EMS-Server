@@ -39,10 +39,11 @@ module.exports = (io) => {
       "pastMonth": 30,
       "pastYear": 365
     }
-
+  
     murbPower.estimatedDocumentCount()
     .then((count) => {
       if ((count == 0)) {
+        
         socket.emit("Pre - Generate Murb Power", () => {
           const dateInterval = {
             start: subDays(new Date(), amountOfDaysToSub[interval]),
