@@ -8,4 +8,8 @@ module.exports = (socket) => {
   socket.on("New Murb Power", (data) => {
     addMurbPower(data);
   });
+
+  socket.on("New EV Power", (data) => {
+    addMurbPower(data);
+  });
 }
