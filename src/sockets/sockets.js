@@ -13,4 +13,8 @@ module.exports = (socket) => {
   socket.on("New EV Power", (data) => {
     addEvPower(data)
   });
+
+  socket.on("Test", (data) => {
+    console.log(`Received Test Event with: ${data}`);
+  })
 }
