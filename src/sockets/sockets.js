@@ -1,4 +1,5 @@
 const addMurbPower = require('../services/addMurbPower');
+const addEvPower = require('../services/addEvPower');
 
 module.exports = (socket) => {
   socket.on("Old Murb Power", (data) => {
@@ -10,6 +11,6 @@ module.exports = (socket) => {
   });
 
   socket.on("New EV Power", (data) => {
-    addMurbPower(data);
+    addEvPower(data)
   });
 }
