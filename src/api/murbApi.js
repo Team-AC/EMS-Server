@@ -27,9 +27,33 @@ function validateInterval(req, res, next) {
   }
 }
 
+function validateMurbParameters(req, res, next) {
+  const murbParameters = req.query;
+  const requiredValues = [
+    "avgPower",
+    "minPower",
+    "maxPower"
+  ];
+
+  let error = false;
+  requiredValues.forEach((requireValue) => {
+    if (!murbParameters[requireValue] || !parseFloat(murbParameters[requireValue])) {
+      error = true;
+    }
+  });
+
+  if (error) {
+    res.status(400).send(`The MURB parameters ${JSON.stringify(murbParameters)} are not valid. Make sure you have all the required parameters and they are valid non-zero numbers`);
+  } else {
+    next();
+  }
+}
+
 module.exports = (io) => {
-  murbAPI.post('/generate/:interval', validateInterval, (req, res) => {
+  murbAPI.post('/generate/:interval', validateInterval, validateMurbParameters, (req, res) => {
     const { interval } = req.params;
+    const murbParameters = req.query;
+    console.log(murbParameters);
     
     const socket = getSocket(io);
 
@@ -52,7 +76,7 @@ module.exports = (io) => {
 
           preAddMurbPower(dateInterval)
           .then(() => {
-            socket.emit("Generate Murb Power", interval);
+            socket.emit("Generate Murb Power", interval, murbParameters);
             res.sendStatus(200);
           })
           .catch((err) => {
