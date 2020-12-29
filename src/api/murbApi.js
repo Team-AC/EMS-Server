@@ -6,10 +6,11 @@ const getCostFromPower = require('../helpers/getCostFromPower');
 const getOffPeakUsage = require('../helpers/getOffPeakUsage');
 const getPeakUsage = require('../helpers/getPeakUsage');
 const getSocket = require('../helpers/getSocket');
-const murbAPI = express.Router();
 const { murbPower, murbPowerDaily, murbPowerHourly, murbPowerWeekly, murbPowerMonthly } = require('../models/murb');
 const preAddMurbPower = require('../services/preAddMurbPower');
 const removeAllMurbPower = require('../services/removeAllMurbPower');
+
+const murbAPI = express.Router();
 
 function validateInterval(req, res, next) {
   const { interval } = req.params;
