@@ -53,7 +53,6 @@ module.exports = (io) => {
   murbAPI.post('/generate/:interval', validateInterval, validateMurbParameters, (req, res) => {
     const { interval } = req.params;
     const murbParameters = req.query;
-    console.log(murbParameters);
     
     const socket = getSocket(io);
 
