@@ -11,5 +11,7 @@ RUN npm ci
 
 COPY . ./
 
+EXPOSE 3000
+
 # serve
 CMD node src/index.js
