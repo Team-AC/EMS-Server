@@ -14,7 +14,7 @@ phases:
   build:
     commands: 
       - docker build -t $ECR_URI:$TAG .
-      - docker tag $ECR_URI:prod $ECR_URI:$TAG
+      - docker tag $ECR_URI:$TAG $ECR_URI:$TAG
   post_build:
     commands:
       - docker push $ECR_URI:$TAG
