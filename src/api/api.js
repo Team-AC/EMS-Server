@@ -2,6 +2,10 @@ const express = require('express');
 const apiRouter = express.Router();
 
 module.exports = (io) => {
+  apiRouter.get('/health', (req, res) => {
+    res.sendStatus(200);
+  })
+
   const murbAPI = require('./murbApi')(io);
   apiRouter.use('/murb', murbAPI);
 
