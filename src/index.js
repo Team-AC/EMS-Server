@@ -6,7 +6,7 @@ require('dotenv').config();
 // Express
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = parseInt(process.env.PROD) ? 80 : 3000; // Use port 80 in production, 3000 in development
 app.use(express.json({limit: "5mb"}));
 
 // MongoDB
