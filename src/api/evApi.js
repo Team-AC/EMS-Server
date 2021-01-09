@@ -10,6 +10,8 @@ module.exports = (io) => {
     const socket = getSocket(io);
   
     socket.emit("Generate Ev", evParameters);
+
+    res.sendStatus(200);
   
   });
 
