@@ -9,6 +9,8 @@ const evPowerSchema = new mongoose.Schema({
   },
   Power: Number,
   ChargeTime: Number,
+  EvChargerNumber: Number,
+  EvChargerType: Number,
 });
 
 const evPower = mongoose.model('EV-Power', evPowerSchema);
