@@ -14,7 +14,6 @@ module.exports = (io) => {
     socket.emit("Generate Ev", interval, evParameters);
 
     res.sendStatus(200);
-  
   });
 
   evAPI.delete('/', (req, res) => {

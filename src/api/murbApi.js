@@ -32,8 +32,10 @@ function validateMurbParameters(req, res, next) {
   const murbParameters = req.query;
   const requiredValues = [
     "avgPower",
-    "minPower",
-    "maxPower"
+    "avgPowerSummer",
+    "avgPowerSpring",
+    "avgPowerFall",
+    "avgPowerWinter"
   ];
 
   let error = false;
