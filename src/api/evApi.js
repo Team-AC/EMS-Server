@@ -131,7 +131,7 @@ module.exports = (io) => {
     }).lean();
   });
   
-  murbAPI.get('/status', (req, res) => {
+  evAPI.get('/status', (req, res) => {
     const socket = getSocket(io);
 
     socket.emit("Status Check Ev", (data) => {
@@ -139,7 +139,7 @@ module.exports = (io) => {
     });
   });
 
-  murbAPI.get('/status/chargers', (req, res) => {
+  evAPI.get('/status/chargers', (req, res) => {
     const socket = getSocket(io);
 
     socket.emit("Status Check Ev Chargers", (data) => {
