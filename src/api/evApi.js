@@ -71,6 +71,10 @@ module.exports = (io) => {
     const socket = getSocket(io);
 
     socket.emit("Status Check Ev", (data) => {
+      if (!data) {
+        res.status(500).send('No data received, check to see if you ran real time data')
+      }
+
       res.send(data);
     });
   });
@@ -79,6 +83,10 @@ module.exports = (io) => {
     const socket = getSocket(io);
 
     socket.emit("Status Check Ev Chargers", (data) => {
+      if (!data) {
+        res.status(500).send('No data received, check to see if you ran real time data')
+      }
+      
       res.send(data);
     });
   });
