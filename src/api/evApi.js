@@ -149,6 +149,8 @@ module.exports = (io) => {
 
 
   evAPI.delete('/', (req, res) => {
+    const socket = getSocket(io);
+    
     socket.emit("Stop Ev Power", response => {
       removeAllEv()
       .then(() => {
