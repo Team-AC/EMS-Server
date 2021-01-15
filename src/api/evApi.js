@@ -51,7 +51,7 @@ module.exports = (io) => {
             end: new Date()
           }
           
-          preAddEvPower(dateInterval, parseInt(evParameters.num_ev_level_2), parseInt(evParameters.num_ev_level_3))
+          preAddEvPower(dateInterval, parseInt(evParameters.numOfEvLevel2), parseInt(evParameters.numOfEvLevel3))
           .then(() => {
             socket.emit("Generate Ev", interval, evParameters);
             res.sendStatus(200);
