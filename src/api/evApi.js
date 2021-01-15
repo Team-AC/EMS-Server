@@ -130,14 +130,33 @@ module.exports = (io) => {
       }
     }).lean();
   });
+  
+  murbAPI.get('/status', (req, res) => {
+    const socket = getSocket(io);
+
+    socket.emit("Status Check Ev", (data) => {
+      res.send(data);
+    });
+  });
+
+  murbAPI.get('/status/chargers', (req, res) => {
+    const socket = getSocket(io);
+
+    socket.emit("Status Check Ev Chargers", (data) => {
+      res.send(data);
+    });
+  });
+
 
   evAPI.delete('/', (req, res) => {
-    removeAllEv()
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch((err) => {
-      res.status(500).send(err);
+    socket.emit("Stop Ev Power", response => {
+      removeAllEv()
+      .then(() => {
+        res.sendStatus(200);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      });
     });
   }) 
 
