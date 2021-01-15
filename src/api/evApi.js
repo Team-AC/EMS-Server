@@ -67,6 +67,22 @@ module.exports = (io) => {
     });
   });
 
+  evAPI.get('/status', (req, res) => {
+    const socket = getSocket(io);
+
+    socket.emit("Status Check Ev", (data) => {
+      res.send(data);
+    });
+  });
+
+  evAPI.get('/status/chargers', (req, res) => {
+    const socket = getSocket(io);
+
+    socket.emit("Status Check Ev Chargers", (data) => {
+      res.send(data);
+    });
+  });
+
   evAPI.get('/:interval', validateInterval, (req, res) => {
     const { interval } = req.params;
     
@@ -130,27 +146,11 @@ module.exports = (io) => {
       }
     }).lean();
   });
-  
-  evAPI.get('/status', (req, res) => {
-    const socket = getSocket(io);
-
-    socket.emit("Status Check Ev", (data) => {
-      res.send(data);
-    });
-  });
-
-  evAPI.get('/status/chargers', (req, res) => {
-    const socket = getSocket(io);
-
-    socket.emit("Status Check Ev Chargers", (data) => {
-      res.send(data);
-    });
-  });
 
 
   evAPI.delete('/', (req, res) => {
     const socket = getSocket(io);
-    
+
     socket.emit("Stop Ev Power", response => {
       removeAllEv()
       .then(() => {
