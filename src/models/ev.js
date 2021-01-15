@@ -2,11 +2,7 @@ const mongoose = require('mongoose');
 
 // Define Schemas
 const evPowerSchema = new mongoose.Schema({
-  TimeStamp: {
-    type: Date,
-    unique: true,
-    index: true,
-  },
+  TimeStamp: Date,
   Power: Number,
   ChargeTime: Number,
   EvChargerNumber: Number,
