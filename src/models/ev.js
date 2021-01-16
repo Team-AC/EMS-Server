@@ -9,7 +9,6 @@ const evPowerSchema = new mongoose.Schema({
   EvChargerType: Number,
 });
 
-// Define Schemas
 const evAggregatedPowerSchema = new mongoose.Schema({
   TimeStamp: Date,
   TotalPower: Number,
@@ -19,6 +18,12 @@ const evAggregatedPowerSchema = new mongoose.Schema({
   AggregatedAmount: Number
 });
 
+const evConfigSchema = new mongoose.Schema({
+  _id: Number,
+  NumberOfLevel2: Number,
+  NumberOfLevel3: Number,
+}, { strict: false });
+
 evPowerSchema.index({TimeStamp: 1, EvChargerType: 1, EvChargerNumber: 1}, { unique: true })
 evAggregatedPowerSchema.index({TimeStamp: 1, EvChargerType: 1, EvChargerNumber: 1}, { unique: true })
 
@@ -26,10 +31,12 @@ const evPower = mongoose.model('EV-Power', evPowerSchema);
 const evPowerDaily = mongoose.model('EV-Power-Daily', evAggregatedPowerSchema);
 const evPowerWeekly = mongoose.model('EV-Power-Weekly', evAggregatedPowerSchema);
 const evPowerMonthly = mongoose.model('EV-Power-Monthly', evAggregatedPowerSchema);
+const evConfig = mongoose.model('EV-Config', evConfigSchema);
 
 module.exports = {
   evPower,
   evPowerDaily,
   evPowerWeekly,
-  evPowerMonthly
+  evPowerMonthly,
+  evConfig
 }
