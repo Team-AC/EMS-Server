@@ -12,6 +12,7 @@ module.exports = (socket) => {
 
   socket.on("New EV Power", (data) => {
     addEvPower(data)
+    .catch(err => console.log(err))
   });
 
   socket.on("Test", (data) => {

@@ -26,8 +26,11 @@ module.exports = (data) => {
   const dateWeekly = startOfWeek(date);
   const dateMonthly = startOfMonth(date);
 
-  evPower.create(data);
-  addAggregatedData(evPowerDaily, {...data, TimeStamp: dateDaily});
-  addAggregatedData(evPowerWeekly, {...data, TimeStamp: dateWeekly});
-  addAggregatedData(evPowerMonthly, {...data, TimeStamp: dateMonthly});
+  return Promise.all([
+    evPower.create(data),
+    addAggregatedData(evPowerDaily, {...data, TimeStamp: dateDaily}),
+    addAggregatedData(evPowerWeekly, {...data, TimeStamp: dateWeekly}),
+    addAggregatedData(evPowerMonthly, {...data, TimeStamp: dateMonthly}),
+  ])
+
 }
