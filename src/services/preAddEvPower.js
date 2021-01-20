@@ -6,7 +6,7 @@ function initializeAggregatedData(TimeStamps, amountOfLevel2, amountOfLevel3, mo
   const promises = [];
 
   TimeStamps.forEach((TimeStamp) => {
-    for (i = 1; i <= amountOfLevel2; i++){
+    for (i = 0; i < amountOfLevel2; i++){
       const promise = model.create({
         TotalPower: 0,
         TimeStamp,
@@ -19,7 +19,7 @@ function initializeAggregatedData(TimeStamps, amountOfLevel2, amountOfLevel3, mo
       promises.push(promise);
     }
 
-    for (i = 1; i <= amountOfLevel3; i++){
+    for (i = 0; i < amountOfLevel3; i++){
       const promise = model.create({
         TotalPower: 0,
         TimeStamp,
