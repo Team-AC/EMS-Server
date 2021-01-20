@@ -139,13 +139,15 @@ module.exports = (io) => {
         })
       }
 
-      data.forEach(({TimeStamp, Power, TotalPower, AggregatedAmount, ...restData}) => {
+      data.forEach(({TimeStamp, Power, TotalPower, AggregatedAmount, TotalChargeTime, ...restData}) => {
         if (TotalPower) {
           aggregatedData.push({
             TimeStamp,
             TotalPower,
+            TotalChargeTime,
             AggregatedAmount,
             AveragePowerPerEv: TotalPower/AggregatedAmount,
+            AverageChargeTimePerEv: TotalChargeTime/AggregatedAmount,
             Cost: getCostFromPower(TotalPower, TimeStamp),
             ...restData
           })
