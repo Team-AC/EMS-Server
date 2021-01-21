@@ -103,6 +103,17 @@ module.exports = (io) => {
     });
   });
 
+  evAPI.get('/count', (req, res) => {
+    evPower.estimatedDocumentCount()
+    .then((count) => {
+      res.send({count})
+    })
+    .catch((err) => {
+      console.log(err);
+      res.sendStatus(500);
+    })
+  });
+
   evAPI.get('/:interval', validateInterval, (req, res) => {
     const { interval } = req.params;
     
