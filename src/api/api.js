@@ -12,5 +12,8 @@ module.exports = (io) => {
   const evAPI = require('./evApi')(io);
   apiRouter.use('/ev', evAPI);
 
+  const designAPI = require('./designApi')(io);
+  apiRouter.use('/design', designAPI);
+
   return apiRouter
 }
