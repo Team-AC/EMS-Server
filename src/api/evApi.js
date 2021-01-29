@@ -6,6 +6,7 @@ const getPeakUsage = require('../helpers/getPeakUsage');
 const getSocket = require('../helpers/getSocket');
 const { evPower, evPowerDaily, evPowerWeekly, evPowerMonthly, evConfig } = require('../models/ev');
 const addEvConfig = require('../services/addEvConfig');
+const getEvData = require('../services/getEvData');
 const preAddEvPower = require('../services/preAddEvPower');
 const removeAllEv = require('../services/removeAllEv');
 
@@ -116,68 +117,14 @@ module.exports = (io) => {
 
   evAPI.get('/:interval', validateInterval, (req, res) => {
     const { interval } = req.params;
-    
-    const amountOfDaysToSub = {
-      "pastDay": 1,
-      "pastWeek": 7,
-      "pastMonth": 30,
-      "past3Months": 90,
-      "pastYear": 365
-    }
-
-    const model = {
-      "pastDay": evPower,
-      "pastWeek": evPowerDaily,
-      "pastMonth": evPowerDaily,
-      "past3Months": evPowerWeekly,
-      "pastYear": evPowerMonthly
-    }
-
-    model[interval].find({
-      TimeStamp: {
-        $gte: subDays(new Date(), amountOfDaysToSub[interval]),
-        $lte: new Date()
-      }
-    }, (err, data) => {
-      const aggregatedData = [];
-
-      if (interval === "pastDay") {
-        data.forEach(data => {
-          aggregatedData.push({
-            ...data,
-            Cost: getCostFromPower(data.Power, data.TimeStamp),
-          })
-        })
-      }
-
-      data.forEach(({TimeStamp, Power, TotalPower, AggregatedAmount, TotalChargeTime, ...restData}) => {
-        if (TotalPower) {
-          aggregatedData.push({
-            TimeStamp,
-            TotalPower,
-            TotalChargeTime,
-            AggregatedAmount,
-            AveragePowerPerEv: TotalPower/AggregatedAmount,
-            AverageChargeTimePerEv: TotalChargeTime/AggregatedAmount,
-            Cost: getCostFromPower(TotalPower, TimeStamp),
-            ...restData
-          })
-        }
-      });
-      
-      const peakUsage = getPeakUsage(aggregatedData);
-      const offPeakUsage = getOffPeakUsage(aggregatedData);
-
-      if (err) {
+      getEvData(interval)
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
         res.sendStatus(500);
-      } else {
-        res.send({
-          peakUsage,
-          offPeakUsage,
-          aggregatedData
-        });
-      }
-    }).lean();
+        console.log(err);
+      })
   });
 
 

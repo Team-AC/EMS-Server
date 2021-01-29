@@ -15,5 +15,8 @@ module.exports = (io) => {
   const designAPI = require('./designApi')(io);
   apiRouter.use('/design', designAPI);
 
+  const optimizeAPI = require('./optimizeApi')(io);
+  apiRouter.use('/optimize', optimizeAPI);
+
   return apiRouter
 }
