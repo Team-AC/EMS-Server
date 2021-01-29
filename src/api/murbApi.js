@@ -1,113 +1,180 @@
-const { subHours, formatISO, isSameHour, startOfHour, parseISO, getHours } = require('date-fns');
+const { subHours, formatISO, isSameHour, startOfHour, parseISO, getHours, subMonths, subDays } = require('date-fns');
 const express = require('express');
 const _ = require('lodash');
+const { Model } = require('mongoose');
+const getCostFromPower = require('../helpers/getCostFromPower');
+const getOffPeakUsage = require('../helpers/getOffPeakUsage');
+const getPeakUsage = require('../helpers/getPeakUsage');
+const getSocket = require('../helpers/getSocket');
+const { murbPower, murbPowerDaily, murbPowerHourly, murbPowerWeekly, murbPowerMonthly } = require('../models/murb');
+const preAddMurbPower = require('../services/preAddMurbPower');
+const removeAllMurbPower = require('../services/removeAllMurbPower');
+
 const murbAPI = express.Router();
-const { murbPower } = require('../models/murb');
 
+function validateInterval(req, res, next) {
+  const { interval } = req.params;
+  const possibleValues = [
+    "pastDay",
+    "pastWeek",
+    "pastMonth",
+    "pastYear"
+  ];
 
-murbAPI.get('/', (req, res) => {
-  const {startDate, endDate} = req.query;
-
-  murbPower.find({
-    TimeStamp: {
-      $gte: startDate,
-      $lte: endDate
-    }
-  }, (err, murbs) => {
-    if (err) return console.error(err);
-
-    if (murbs.length > 100) {
-      res.status(404).send({error: "Requested more than a 100 points"});
-    } else {
-      res.send(murbs);
-    }
-  });
-});
-
-function avgPowerFromData(data) {
-  return data.map(data => data.Power).reduce((sum, n) => sum + n)
+  if (possibleValues.includes(interval)) {
+    next();
+  } else {
+    res.status(400).send(`The interval parameter ${interval} is not valid`);
+  }
 }
 
-murbAPI.get('/pastDay', (req, res) => {
-  murbPower.find({
-    TimeStamp: {
-      $gte: formatISO(subHours(new Date(), 24)),
-      $lte: formatISO(new Date())
+function validateMurbParameters(req, res, next) {
+  const murbParameters = req.query;
+  const requiredValues = [
+    "avgPower",
+    "avgPowerSummer",
+    "avgPowerSpring",
+    "avgPowerFall",
+    "avgPowerWinter"
+  ];
+
+  let error = false;
+  requiredValues.forEach((requireValue) => {
+    if (!murbParameters[requireValue] || !parseFloat(murbParameters[requireValue])) {
+      error = true;
     }
-  }, (err, murbs) => {
+  });
 
-    const murbsAggregatedHours = murbs.map((murb) => ({
-      Power: murb.Power,
-      TimeStamp: startOfHour(murb.TimeStamp)
-    }));
+  if (error) {
+    res.status(400).send(`The MURB parameters ${JSON.stringify(murbParameters)} are not valid. Make sure you have all the required parameters and they are valid non-zero numbers`);
+  } else {
+    next();
+  }
+}
 
-    let aggregatedData = [];
-    let aggregatingHour = murbsAggregatedHours[0];
-    let aggregatingPower = [];
+module.exports = (io) => {
+  murbAPI.post('/generate/:interval', validateInterval, validateMurbParameters, (req, res) => {
+    const { interval } = req.params;
+    const murbParameters = req.query;
+    
+    const socket = getSocket(io);
 
-    for (const murb of murbsAggregatedHours) {
-      if (isSameHour(murb.TimeStamp, aggregatingHour.TimeStamp)) {
-        aggregatingPower.push(murb.Power);
-      } else {
-        aggregatedData.push({
-          Power: aggregatingPower.reduce((sum, n) => sum + n)/aggregatingPower.length,
-          TimeStamp: aggregatingHour.TimeStamp
+    const amountOfDaysToSub = {
+      "pastDay": 1,
+      "pastWeek": 7,
+      "pastMonth": 30,
+      "pastYear": 365
+    }
+  
+    murbPower.estimatedDocumentCount()
+    .then((count) => {
+      if ((count == 0)) {
+        
+        socket.emit("Pre - Generate Murb Power", () => {
+          const dateInterval = {
+            start: subDays(new Date(), amountOfDaysToSub[interval]),
+            end: new Date()
+          }
+
+          preAddMurbPower(dateInterval)
+          .then(() => {
+            socket.emit("Generate Murb Power", interval, murbParameters);
+            res.sendStatus(200);
+          })
+          .catch((err) => {
+            res.status(400).send(err)
+          })
         });
-        aggregatingHour = murb;
-        aggregatingPower = [];
+      } else {
+        res.status(400).send("Cannot generate data while there is still data in the database, send the delete request first")
       }
-    }
 
-    let peakArray = aggregatedData.slice(0,4);
-    for (let i=0; i < aggregatedData.length - 4; i++) {
-      const checkArray = aggregatedData.slice(i, i + 4)
-      if (avgPowerFromData(peakArray) <= avgPowerFromData(checkArray)) {
-        peakArray = checkArray;
-      } 
-    }
+    })
 
-    const peakHours = `${getHours(peakArray[0].TimeStamp)} - ${getHours(_.last(peakArray).TimeStamp)}`
+  });
 
-    let offPeakArray = aggregatedData.slice(0,4);
-    for (let i=0; i < aggregatedData.length - 4; i++) {
-      const checkArray = aggregatedData.slice(i, i + 4)
-      if (avgPowerFromData(offPeakArray) >= avgPowerFromData(checkArray)) {
-        offPeakArray = checkArray;
-      } 
-    }
+  murbAPI.delete('/', (req, res) => {
+    const socket = getSocket(io);
 
-    const offPeakHours = `${getHours(offPeakArray[0].TimeStamp)} - ${getHours(_.last(offPeakArray).TimeStamp)}`
+    socket.emit("Stop Murb Power", (response) => {
+      removeAllMurbPower()
+      .then(() => {
+        res.sendStatus(200);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      })
+    });
+  });
 
-    if (err || !aggregatedData) {
+  murbAPI.get('/count', (req, res) => {
+    murbPower.estimatedDocumentCount()
+    .then((count) => {
+      res.send({count})
+    })
+    .catch((err) => {
+      console.log(err);
       res.sendStatus(500);
-    } else {
-      res.send({
-        peakHours,
-        offPeakHours,
-        aggregatedData
+    })
+  });
+
+  murbAPI.get('/status', (req, res) => {
+    const socket = getSocket(io);
+
+    socket.emit("Status Check", (data) => {
+      res.send(data);
+    });
+  });
+  
+  murbAPI.get('/:interval', validateInterval, (req, res) => {
+    const { interval } = req.params;
+    
+    const amountOfDaysToSub = {
+      "pastDay": 1,
+      "pastWeek": 7,
+      "pastMonth": 30,
+      "pastYear": 365
+    }
+
+    const model = {
+      "pastDay": murbPowerHourly,
+      "pastWeek": murbPowerDaily,
+      "pastMonth": murbPowerDaily,
+      "pastYear": murbPowerMonthly
+    }
+
+    model[interval].find({
+      TimeStamp: {
+        $gte: subDays(new Date(), amountOfDaysToSub[interval]),
+        $lte: new Date()
+      }
+    }, (err, data) => {
+      aggregatedData = [];
+
+      data.forEach(({TimeStamp, Power, AggregatedAmount}) => {
+        if (Power) {
+          aggregatedData.push({
+            TimeStamp,
+            Power: Power/AggregatedAmount,
+            Cost: getCostFromPower(Power, TimeStamp)
+          })
+        }
       });
-    }
-  });
-});
+      
+      const peakUsage = getPeakUsage(aggregatedData);
+      const offPeakUsage = getOffPeakUsage(aggregatedData);
 
-murbAPI.post('/oldData', (req, res) => {
-  murbPower.create(req.body, (err) => {
-    if (err) {
-      res.sendStatus(400);
-      console.log(err);
-    }
-    res.sendStatus(200);
+      if (err) {
+        res.sendStatus(500);
+      } else {
+        res.send({
+          peakUsage,
+          offPeakUsage,
+          aggregatedData
+        });
+      }
+    });
   });
-});
 
-murbAPI.post('/newData', (req, res) => {
-  murbPower.create(req.body, (err) => {
-    if (err) {
-      res.sendStatus(400);
-      console.log(err);
-    }
-    res.sendStatus(200);
-  });
-});
-
-module.exports = murbAPI;
+  return murbAPI;
+}

@@ -1,7 +1,22 @@
 const express = require('express');
 const apiRouter = express.Router();
 
-const murbAPI = require('./murbApi');
-apiRouter.use('/murb', murbAPI);
+module.exports = (io) => {
+  apiRouter.get('/health', (req, res) => {
+    res.sendStatus(200);
+  })
 
-module.exports = apiRouter;
+  const murbAPI = require('./murbApi')(io);
+  apiRouter.use('/murb', murbAPI);
+
+  const evAPI = require('./evApi')(io);
+  apiRouter.use('/ev', evAPI);
+
+  const designAPI = require('./designApi')(io);
+  apiRouter.use('/design', designAPI);
+
+  const optimizeAPI = require('./optimizeApi')(io);
+  apiRouter.use('/optimize', optimizeAPI);
+
+  return apiRouter
+}

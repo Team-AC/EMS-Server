@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const murbPowerSchema = new mongoose.Schema({
   TimeStamp: {
     type: Date,
-    unique: true
+    unique: true,
+    index: true,
   },
   Power: Number
 });
@@ -12,7 +13,8 @@ const murbPowerSchema = new mongoose.Schema({
 const murbAggregatedPowerSchema = new mongoose.Schema({
   TimeStamp: {
     type: Date,
-    unique: true
+    unique: true,
+    index: true,
   },
   Power: Number,
   AggregatedAmount: Number,
