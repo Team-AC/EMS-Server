@@ -7,7 +7,7 @@ module.exports = (io) => {
   bessApi.post('/init', (req, res) => {
     const socket = getSocket(io);
 
-    const bessParams = req.query;
+    const bessParams = req.body;
 
     socket.emit("Bess Init", bessParams, () => {
       res.sendStatus(200)
