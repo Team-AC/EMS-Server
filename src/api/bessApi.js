@@ -17,7 +17,9 @@ module.exports = (io) => {
   bessApi.post('/charge', (req, res) => {
     const socket = getSocket(io);
 
-    socket.emit("Bess Charge", () => {
+    const { chargeAmount } = req.query;
+
+    socket.emit("Bess Charge", chargeAmount, () => {
       res.sendStatus(200)
     })
   })
