@@ -38,6 +38,10 @@ module.exports = (io) => {
         res.status(200).send(data);
       });
     })
+    .catch(err => {
+      res.sendStatus(500);
+      console.error(err);
+    })
 
 
   })
