@@ -35,7 +35,7 @@ module.exports = (io) => {
     Promise.all(getEvDataPromises)
     .then((historicData) => {
       socket.emit("Generate EV Prediction", historicData, evPredictParams, hours, (data) => {
-        res.send(data);
+        res.status(200).send(data);
       });
     })
 
