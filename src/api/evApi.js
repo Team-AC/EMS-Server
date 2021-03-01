@@ -32,7 +32,7 @@ function validateInterval(req, res, next) {
 module.exports = (io) => {
   evAPI.post('/generate/:interval', validateInterval, (req, res) => {
     const { interval } = req.params;
-    const evParameters = req.query;
+    const evParameters = req.body;
     
     const socket = getSocket(io);
 
