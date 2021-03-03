@@ -8,6 +8,7 @@ const { evPower, evPowerDaily, evPowerWeekly, evPowerMonthly, evConfig } = requi
 const addEvConfig = require('../services/addEvConfig');
 const getEvData = require('../services/getEvData');
 const preAddEvPower = require('../services/preAddEvPower');
+const removeAllBess = require('../services/removeAllBess');
 const removeAllEv = require('../services/removeAllEv');
 
 const evAPI = express.Router();
@@ -133,6 +134,7 @@ module.exports = (io) => {
 
     socket.emit("Stop Ev Power", response => {
       removeAllEv()
+      .then(() => removeAllBess())
       .then(() => {
         res.sendStatus(200);
       })
