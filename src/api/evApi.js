@@ -33,7 +33,7 @@ function validateInterval(req, res, next) {
 module.exports = (io) => {
   evAPI.post('/generate/:interval', validateInterval, (req, res) => {
     const { interval } = req.params;
-    const evParameters = req.body;
+    const { evParameters, bessParameters} = req.body;
     
     const socket = getSocket(io);
 
@@ -57,7 +57,7 @@ module.exports = (io) => {
           preAddEvPower(dateInterval, parseInt(evParameters.numOfEvLevel2), parseInt(evParameters.numOfEvLevel3))
           .then(() => addEvConfig(evParameters))
           .then(() => {
-            socket.emit("Generate Ev", interval, evParameters);
+            socket.emit("Generate Ev", interval, evParameters, bessParameters);
             res.sendStatus(200)
           })
           .catch((err) => {
