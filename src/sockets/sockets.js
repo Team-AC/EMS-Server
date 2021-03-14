@@ -21,6 +21,15 @@ module.exports = (socket) => {
     .catch(err => console.log(err))
   });
 
+  socket.on("Historical Data Pause", (timeStamp) => {
+    schedule = {
+      test: 0
+    }
+    setTimeout(() => {
+      socket.emit("Historical Data Continue", (schedule))
+    }, 100)
+  })
+
 
   socket.on("Test", (data) => {
     console.log(`Received Test Event with: ${data}`);
