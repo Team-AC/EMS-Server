@@ -1,6 +1,7 @@
 const addMurbPower = require('../services/addMurbPower');
 const addEvPower = require('../services/addEvPower');
 const addBess = require('../services/addBess');
+const addEnergy = require('../services/addEnergy');
 
 module.exports = (socket) => {
   socket.on("Old Murb Power", (data) => {
@@ -30,6 +31,10 @@ module.exports = (socket) => {
     }, 100)
   })
 
+  socket.on("New Energy", (data) => {
+    addEnergy(data)
+    .catch(err => console.log(err))
+  })
 
   socket.on("Test", (data) => {
     console.log(`Received Test Event with: ${data}`);
