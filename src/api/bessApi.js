@@ -1,5 +1,7 @@
 const express = require('express');
 const getSocket = require('../helpers/getSocket');
+const {energy} = require('../models/bess');
+const getEnergy = require('../services/getEnergy');
 
 const bessApi = express.Router();
 
@@ -23,6 +25,15 @@ module.exports = (io) => {
       res.sendStatus(200)
     })
   })
+
+  bessApi.get('/energy', (req, res) => {
+    getEnergy()
+    .then(data => {
+      res.send(data)
+    })
+  })
+
+  bessApi.get('/', )
 
   return bessApi
 }
