@@ -6,6 +6,7 @@ const getPeakUsage = require('../helpers/getPeakUsage');
 const getSocket = require('../helpers/getSocket');
 const { evPower, evPowerDaily, evPowerWeekly, evPowerMonthly, evConfig } = require('../models/ev');
 const addEvConfig = require('../services/addEvConfig');
+const generateNewSchedule = require('../services/generateNewSchedule');
 const getEvData = require('../services/getEvData');
 const preAddEvPower = require('../services/preAddEvPower');
 const removeAllBess = require('../services/removeAllBess');
@@ -56,8 +57,9 @@ module.exports = (io) => {
           
           preAddEvPower(dateInterval, parseInt(evParameters.numOfEvLevel2), parseInt(evParameters.numOfEvLevel3))
           .then(() => addEvConfig(evParameters))
-          .then(() => {
-            socket.emit("Generate Ev", interval, evParameters, bessParameters);
+          .then(() => generateNewSchedule(socket))
+          .then((schedule) => {
+            socket.emit("Generate Ev", interval, evParameters, bessParameters, schedule);
             res.sendStatus(200)
           })
           .catch((err) => {
