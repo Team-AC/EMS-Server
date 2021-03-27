@@ -1,5 +1,5 @@
-const { eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval } = require("date-fns");
-const { evPowerDaily, evPowerWeekly, evPowerMonthly } = require("../models/ev");
+const { eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, eachHourOfInterval } = require("date-fns");
+const { evPowerHourly, evPowerDaily, evPowerWeekly, evPowerMonthly } = require("../models/ev");
 
 // Creates a scaffold for aggregated data
 function initializeAggregatedData(TimeStamps, amountOfLevel2, amountOfLevel3, model) {
@@ -37,15 +37,18 @@ function initializeAggregatedData(TimeStamps, amountOfLevel2, amountOfLevel3, mo
 }
 
 module.exports = (interval, amountOfLevel2, amountOfLevel3) => {
+  const hours = eachHourOfInterval(interval);
   const days = eachDayOfInterval(interval);
   const weeks = eachWeekOfInterval(interval);
   const months = eachMonthOfInterval(interval);
 
+  const hourlyInit = initializeAggregatedData(hours, amountOfLevel2, amountOfLevel3, evPowerHourly);
   const dailyInit = initializeAggregatedData(days, amountOfLevel2, amountOfLevel3, evPowerDaily);
   const weeklyInit = initializeAggregatedData(weeks, amountOfLevel2, amountOfLevel3, evPowerWeekly);
   const monthlyInit = initializeAggregatedData(months, amountOfLevel2, amountOfLevel3, evPowerMonthly);
 
   return Promise.all([].concat(
+    hourlyInit,
     dailyInit,
     weeklyInit,
     monthlyInit
