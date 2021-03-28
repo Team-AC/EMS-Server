@@ -13,6 +13,7 @@ module.exports = (io) => {
     const evPredictParams = req.query;
 
     const intervals = [
+      'pastWeekHourly',
       'pastMonth',
       'past3Months',
       'pastYear',
