@@ -37,7 +37,7 @@ function getIdealTimeFromHour(hourDate) {
 
 module.exports = (hours, data) => {
   const idealTimesUsage = {
-    ev_discharge: {
+    discharge_ev: {
       power: 0,
       amountEvs: 0,
     },
@@ -58,7 +58,6 @@ module.exports = (hours, data) => {
     idealTimesUsage[idealTime].power += data[index][1];
   })
 
-  console.log(idealTimesUsage);
 
   return [];
 }
