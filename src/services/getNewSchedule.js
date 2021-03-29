@@ -1,5 +1,6 @@
 const { addHours, eachHourOfInterval } = require("date-fns");
 const getSocket = require("../helpers/getSocket");
+const generateNewSchedule = require("./generateNewSchedule");
 const getEvData = require("./getEvData");
 const getEvPredict = require("./getEvPredict");
 
@@ -60,16 +61,23 @@ module.exports = (socket) => {
       getEvDataPromises.push(getEvData(interval));
     })
 
-    Promise.all(getEvDataPromises)
+    return Promise.all(getEvDataPromises)
     .then((historicData) => {
       return getEvPredict(historicData, evPredictParams, hours, socket);
     })
     .then(data => {
-      
+      if (data.length === 0) {
+        return defaultSchedule;
+      } else {
+        const newSchedule = generateNewSchedule(hours, data);
+        if (newSchedule && newSchedule.length !== 0) {
+          return newSchedule;
+        } else {
+          return defaultSchedule;
+        }
+      }
     })
     .catch(err => {
       console.error(err);
     })
-
-    return defaultSchedule;
 }

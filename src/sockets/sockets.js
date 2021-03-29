@@ -24,11 +24,13 @@ module.exports = (socket) => {
   });
 
   socket.on("Historical Data Pause", (timeStamp) => {
-    const schedule = getNewSchedule(socket);
-
-    setTimeout(() => {
-      socket.emit("Historical Data Continue", (schedule))
-    }, 100)
+    getNewSchedule(socket)
+    .then(schedule => {
+      setTimeout(() => {
+        socket.emit("Historical Data Continue", (schedule))
+      }, 100)
+    })
+    .catch(err => console.log(err))
   })
 
   socket.on("New Energy", (data) => {
