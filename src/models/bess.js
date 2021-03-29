@@ -22,6 +22,7 @@ bessSchema.index({TimeStamp: 1, bessChargerType: 1, bessChargerNumber: 1}, { uni
 // bessAggregatedSchema.index({TimeStamp: 1, bessChargerType: 1, bessChargerNumber: 1}, { unique: true })
 
 const bess = mongoose.model('BESS', bessSchema);
+const bessConfig = mongoose.model('BESS-Config', bessConfigSchema);
 const energy = mongoose.model('Energy', energySchema);
 // const bessDaily = mongoose.model('bess-Power-Daily', bessAggregatedPowerSchema);
 // const bessWeekly = mongoose.model('bess-Power-Weekly', bessAggregatedPowerSchema);
@@ -30,6 +31,7 @@ const energy = mongoose.model('Energy', energySchema);
 
 module.exports = {
   bess,
+  bessConfig,
   energy,
   // bessDaily,
   // bessWeekly,

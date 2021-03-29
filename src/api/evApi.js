@@ -11,6 +11,8 @@ const getEvData = require('../services/getEvData');
 const preAddEvPower = require('../services/preAddEvPower');
 const removeAllBess = require('../services/removeAllBess');
 const removeAllEv = require('../services/removeAllEv');
+const addBessConfig = require('../services/addBessConfig');
+const { bessConfig } = require('../models/bess');
 
 const evAPI = express.Router();
 
@@ -57,6 +59,7 @@ module.exports = (io) => {
           
           preAddEvPower(dateInterval, parseInt(evParameters.numOfEvLevel2), parseInt(evParameters.numOfEvLevel3))
           .then(() => addEvConfig(evParameters))
+          .then(() => addBessConfig(bessParameters))
           .then(() => getNewSchedule(socket))
           .then((schedule) => {
             socket.emit("Generate Ev", interval, evParameters, bessParameters, schedule);
