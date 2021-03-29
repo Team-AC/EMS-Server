@@ -35,7 +35,7 @@ function getIdealTimeFromHour(hourDate) {
   }
 }
 
-module.exports = (hours, data) => {
+module.exports = (hours, data, bessConfig) => {
   const idealTimesUsage = {
     discharge_ev: {
       power: 0,
@@ -57,7 +57,6 @@ module.exports = (hours, data) => {
     idealTimesUsage[idealTime].amountEvs += data[index][0];
     idealTimesUsage[idealTime].power += data[index][1];
   })
-
 
   return [];
 }
