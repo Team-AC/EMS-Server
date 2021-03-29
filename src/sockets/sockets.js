@@ -2,7 +2,7 @@ const addMurbPower = require('../services/addMurbPower');
 const addEvPower = require('../services/addEvPower');
 const addBess = require('../services/addBess');
 const addEnergy = require('../services/addEnergy');
-const generateNewSchedule = require('../services/generateNewSchedule');
+const getNewSchedule = require('../services/getNewSchedule');
 
 module.exports = (socket) => {
   socket.on("Old Murb Power", (data) => {
@@ -24,7 +24,7 @@ module.exports = (socket) => {
   });
 
   socket.on("Historical Data Pause", (timeStamp) => {
-    const schedule = generateNewSchedule(socket);
+    const schedule = getNewSchedule(socket);
 
     setTimeout(() => {
       socket.emit("Historical Data Continue", (schedule))
