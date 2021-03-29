@@ -1,6 +1,7 @@
 const { addHours, eachHourOfInterval } = require("date-fns");
 const getSocket = require("../helpers/getSocket");
 const getEvData = require("./getEvData");
+const getEvPredict = require("./getEvPredict");
 
 const defaultSchedule = [{
   start: {
@@ -61,9 +62,10 @@ module.exports = (socket) => {
 
     Promise.all(getEvDataPromises)
     .then((historicData) => {
-      socket.emit("Generate EV Prediction", historicData, evPredictParams, hours, (data) => {
-
-      });
+      return getEvPredict(historicData, evPredictParams, hours, socket);
+    })
+    .then(data => {
+      
     })
     .catch(err => {
       console.error(err);
