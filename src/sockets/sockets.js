@@ -1,5 +1,8 @@
 const addMurbPower = require('../services/addMurbPower');
 const addEvPower = require('../services/addEvPower');
+const addBess = require('../services/addBess');
+const addEnergy = require('../services/addEnergy');
+const getNewSchedule = require('../services/getNewSchedule');
 
 module.exports = (socket) => {
   socket.on("Old Murb Power", (data) => {
@@ -14,6 +17,24 @@ module.exports = (socket) => {
     addEvPower(data)
     .catch(err => console.log(err))
   });
+
+  socket.on("New Bess", (data) => {
+    addBess(data)
+    .catch(err => console.log(err))
+  });
+
+  socket.on("Historical Data Pause", (timeStamp) => {
+    getNewSchedule(socket)
+    .then(schedule => {
+      socket.emit("Historical Data Continue", (schedule))
+    })
+    .catch(err => console.log(err))
+  })
+
+  socket.on("New Energy", (data) => {
+    addEnergy(data)
+    .catch(err => console.log(err))
+  })
 
   socket.on("Test", (data) => {
     console.log(`Received Test Event with: ${data}`);

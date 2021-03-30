@@ -13,8 +13,8 @@ module.exports = (io) => {
     const evPredictParams = req.query;
 
     const intervals = [
+      'pastWeekHourly',
       'pastMonth',
-      'past3Months',
       'pastYear',
     ];
 
@@ -35,8 +35,12 @@ module.exports = (io) => {
     Promise.all(getEvDataPromises)
     .then((historicData) => {
       socket.emit("Generate EV Prediction", historicData, evPredictParams, hours, (data) => {
-        res.send(data);
+        res.status(200).send(data);
       });
+    })
+    .catch(err => {
+      res.sendStatus(500);
+      console.error(err);
     })
 
 

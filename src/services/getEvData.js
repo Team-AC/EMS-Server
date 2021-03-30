@@ -2,11 +2,12 @@ const { subDays } = require("date-fns");
 const getCostFromPower = require("../helpers/getCostFromPower");
 const getOffPeakUsage = require("../helpers/getOffPeakUsage");
 const getPeakUsage = require("../helpers/getPeakUsage");
-const { evPower, evPowerDaily, evPowerWeekly, evPowerMonthly } = require('../models/ev');
+const { evPower, evPowerDaily, evPowerWeekly, evPowerMonthly, evPowerHourly } = require('../models/ev');
 
 const amountOfDaysToSub = {
   "pastDay": 1,
   "pastWeek": 7,
+  "pastWeekHourly": 7,
   "pastMonth": 30,
   "past3Months": 90,
   "pastYear": 365
@@ -15,6 +16,7 @@ const amountOfDaysToSub = {
 const model = {
   "pastDay": evPower,
   "pastWeek": evPowerDaily,
+  "pastWeekHourly": evPowerHourly,
   "pastMonth": evPowerDaily,
   "past3Months": evPowerWeekly,
   "pastYear": evPowerMonthly
@@ -41,18 +43,16 @@ module.exports = (interval) => {
     }
 
     data.forEach(({TimeStamp, Power, TotalPower, AggregatedAmount, TotalChargeTime, ...restData}) => {
-      if (TotalPower) {
-        aggregatedData.push({
-          TimeStamp,
-          TotalPower,
-          TotalChargeTime,
-          AggregatedAmount,
-          AveragePowerPerEv: TotalPower/AggregatedAmount,
-          AverageChargeTimePerEv: TotalChargeTime/AggregatedAmount,
-          Cost: getCostFromPower(TotalPower, TimeStamp),
-          ...restData
-        })
-      }
+      aggregatedData.push({
+        TimeStamp,
+        TotalPower,
+        TotalChargeTime,
+        AggregatedAmount,
+        AveragePowerPerEv: TotalPower/AggregatedAmount,
+        AverageChargeTimePerEv: TotalChargeTime/AggregatedAmount,
+        Cost: getCostFromPower(TotalPower, TimeStamp),
+        ...restData
+      })
     });
     
     // const peakUsage = getPeakUsage(aggregatedData);

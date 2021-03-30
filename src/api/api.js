@@ -12,6 +12,9 @@ module.exports = (io) => {
   const evAPI = require('./evApi')(io);
   apiRouter.use('/ev', evAPI);
 
+  const bessAPI = require('./bessApi')(io);
+  apiRouter.use('/bess', bessAPI);
+
   const designAPI = require('./designApi')(io);
   apiRouter.use('/design', designAPI);
 

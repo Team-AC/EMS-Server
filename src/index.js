@@ -17,6 +17,9 @@ require('./config/mongo');
 const cors = require('cors');
 app.use(cors());
 
+// Parsing application/json
+app.use(express.json())
+
 // --- Server --- //
 
 // Socket.io

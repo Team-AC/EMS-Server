@@ -7,7 +7,7 @@ module.exports = (io) => {
   designApi.post('/finance', (req, res) => {
     const socket = getSocket(io);
 
-    const financeParams = req.query;
+    const financeParams = req.body;
 
     socket.emit("Generate Finance", financeParams, (data) => {
       res.send(data);
