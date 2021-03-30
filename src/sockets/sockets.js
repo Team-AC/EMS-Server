@@ -26,9 +26,7 @@ module.exports = (socket) => {
   socket.on("Historical Data Pause", (timeStamp) => {
     getNewSchedule(socket)
     .then(schedule => {
-      setTimeout(() => {
-        socket.emit("Historical Data Continue", (schedule))
-      }, 100)
+      socket.emit("Historical Data Continue", (schedule))
     })
     .catch(err => console.log(err))
   })

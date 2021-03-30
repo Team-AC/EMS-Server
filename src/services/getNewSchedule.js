@@ -44,7 +44,7 @@ module.exports = (socket) => {
 
     const intervals = [
       'pastMonth',
-      'past3Months',
+      'pastWeekHourly',
       'pastYear',
     ];
 

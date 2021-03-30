@@ -15,7 +15,6 @@ module.exports = (io) => {
     const intervals = [
       'pastWeekHourly',
       'pastMonth',
-      'past3Months',
       'pastYear',
     ];
 

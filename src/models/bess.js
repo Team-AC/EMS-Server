@@ -9,6 +9,8 @@ const bessSchema = new mongoose.Schema({
 });
 
 const bessConfigSchema = new mongoose.Schema({
+  batteryPower: Number,
+  batteryCapacity: Number,
   _id: Number,
 }, { strict: false });
 
