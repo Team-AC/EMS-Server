@@ -43,18 +43,16 @@ module.exports = (interval) => {
     }
 
     data.forEach(({TimeStamp, Power, TotalPower, AggregatedAmount, TotalChargeTime, ...restData}) => {
-      if (TotalPower) {
-        aggregatedData.push({
-          TimeStamp,
-          TotalPower,
-          TotalChargeTime,
-          AggregatedAmount,
-          AveragePowerPerEv: TotalPower/AggregatedAmount,
-          AverageChargeTimePerEv: TotalChargeTime/AggregatedAmount,
-          Cost: getCostFromPower(TotalPower, TimeStamp),
-          ...restData
-        })
-      }
+      aggregatedData.push({
+        TimeStamp,
+        TotalPower,
+        TotalChargeTime,
+        AggregatedAmount,
+        AveragePowerPerEv: TotalPower/AggregatedAmount,
+        AverageChargeTimePerEv: TotalChargeTime/AggregatedAmount,
+        Cost: getCostFromPower(TotalPower, TimeStamp),
+        ...restData
+      })
     });
     
     // const peakUsage = getPeakUsage(aggregatedData);
