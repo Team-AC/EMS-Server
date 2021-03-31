@@ -1,6 +1,7 @@
 const { addHours, eachHourOfInterval } = require("date-fns");
 const getSocket = require("../helpers/getSocket");
 const { bessConfig } = require("../models/bess");
+const { evPredictConfig } = require("../models/ev");
 const generateNewSchedule = require("./generateNewSchedule");
 const getEvData = require("./getEvData");
 const getEvPredict = require("./getEvPredict");
@@ -39,8 +40,9 @@ const defaultSchedule = [{
 },
 ];
 
-module.exports = (socket) => {
-    const evPredictParams = {};
+module.exports = async (socket) => {
+    const evPredictParams = await evPredictConfig.findById(1).exec();
+    const bessData = await bessConfig.findById(1).exec();
 
     const intervals = [
       'pastMonth',
@@ -66,15 +68,11 @@ module.exports = (socket) => {
     .then((historicData) => {
       return getEvPredict(historicData, evPredictParams, hours, socket);
     })
-    .then(async (evPredictData) => {
-      return { evPredictData, bessData: await bessConfig.findById(1).exec() };
-    })
-    .then(promiseData => {
-      const {evPredictData: data, bessData} = promiseData;
-      if (!data?.length) {
+    .then(evPredictData => {
+      if (!evPredictData?.length) {
         return defaultSchedule;
       } else {
-        const newSchedule = generateNewSchedule(hours, data, bessData);
+        const newSchedule = generateNewSchedule(hours, evPredictData, bessData);
         if (newSchedule && newSchedule?.length) {
           return newSchedule;
         } else {

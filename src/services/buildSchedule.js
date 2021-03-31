@@ -70,6 +70,5 @@ module.exports = (idealTimes, powerToUse, batteryPower) => {
 
   }
 
-  console.log(schedule);
   return schedule;
 }

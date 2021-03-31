@@ -1,4 +1,4 @@
-const { evPower, evPowerHourly, evPowerWeekly, evPowerMonthly, evPowerDaily, evConfig } = require("../models/ev")
+const { evPower, evPowerHourly, evPowerWeekly, evPowerMonthly, evPowerDaily, evConfig, evPredictConfig } = require("../models/ev")
 
 module.exports = () => {
   return Promise.all([
@@ -7,6 +7,7 @@ module.exports = () => {
     evPowerDaily.remove({}).exec(),
     evPowerWeekly.remove({}).exec(),
     evPowerMonthly.remove({}).exec(),
-    evConfig.remove({}).exec()
+    evConfig.remove({}).exec(),
+    evPredictConfig.remove({}).exec()
   ]);
 }

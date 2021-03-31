@@ -10,7 +10,7 @@ module.exports = (io) => {
   designApi.post('/ev/predict', (req, res) => {
     const socket = getSocket(io);
 
-    const evPredictParams = req.query;
+    const evPredictParams = req.body;
 
     const intervals = [
       'pastWeekHourly',

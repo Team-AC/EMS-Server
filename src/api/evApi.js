@@ -13,6 +13,7 @@ const removeAllBess = require('../services/removeAllBess');
 const removeAllEv = require('../services/removeAllEv');
 const addBessConfig = require('../services/addBessConfig');
 const { bessConfig } = require('../models/bess');
+const addEvPredictConfig = require('../services/addEvPredictConfig');
 
 const evAPI = express.Router();
 
@@ -36,7 +37,7 @@ function validateInterval(req, res, next) {
 module.exports = (io) => {
   evAPI.post('/generate/:interval', validateInterval, (req, res) => {
     const { interval } = req.params;
-    const { evParameters, bessParameters} = req.body;
+    const { evParameters, bessParameters, evPredictParameters} = req.body;
     
     const socket = getSocket(io);
 
@@ -59,6 +60,7 @@ module.exports = (io) => {
           
           preAddEvPower(dateInterval, parseInt(evParameters.numOfEvLevel2), parseInt(evParameters.numOfEvLevel3))
           .then(() => addEvConfig(evParameters))
+          .then(() => addEvPredictConfig(evPredictParameters))
           .then(() => addBessConfig(bessParameters))
           .then(() => getNewSchedule(socket))
           .then((schedule) => {
