@@ -42,6 +42,7 @@ module.exports = () => {
         if (isWithinInterval(data.TimeStamp, interval)) {
           aggregatedData[key].bess.ev += data.BessEvUsage;
           aggregatedData[key].grid.ev += data.GridEvUsage;
+          aggregatedData[key].bess.arbitrage += data.BessArbitrage;
         }
       }
     })
