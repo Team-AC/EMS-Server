@@ -14,7 +14,7 @@ const amountOfDaysToSub = {
 }
 
 const model = {
-  "pastDay": evPower,
+  "pastDay": evPowerHourly,
   "pastWeek": evPowerDaily,
   "pastWeekHourly": evPowerHourly,
   "pastMonth": evPowerDaily,
@@ -32,15 +32,6 @@ module.exports = (interval) => {
   }).lean().exec()
   .then(data => {
     const aggregatedData = [];
-
-    if (interval === "pastDay") {
-      data.forEach(data => {
-        aggregatedData.push({
-          ...data,
-          Cost: getCostFromPower(data.Power, data.TimeStamp),
-        })
-      })
-    }
 
     data.forEach(({TimeStamp, Power, TotalPower, AggregatedAmount, TotalChargeTime, ...restData}) => {
       aggregatedData.push({

@@ -17,7 +17,8 @@ const bessConfigSchema = new mongoose.Schema({
 const energySchema = new mongoose.Schema({
   TimeStamp: Date,
   BessEvUsage: Number,
-  GridEvUsage: Number
+  GridEvUsage: Number,
+  BessArbitrage: Number,
 }, { strict: false });
 
 bessSchema.index({TimeStamp: 1, bessChargerType: 1, bessChargerNumber: 1}, { unique: true })
