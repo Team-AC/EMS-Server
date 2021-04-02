@@ -58,7 +58,9 @@ module.exports = async (socket) => {
       end: addHours(now, 24)
     };
 
-    const hours = eachHourOfInterval(interval);
+    let hours = eachHourOfInterval(interval);
+    hours = hours.filter(hour => hour.toUTCString());
+
     
     intervals.forEach(interval => {
       getEvDataPromises.push(getEvData(interval));
